@@ -82,4 +82,6 @@
 
         'invoice' => "Facture",
         'invoices' => "Factures",
+
+        'please_select_a_main_currency' => "Veuillez sélectionner une devise par défaut",
 ];

@@ -2,6 +2,7 @@
 
 return [
     'customers' => "Clients",
+    'customer' => "Client",
     'customer_list' => "Liste de clients",
     'add_a_new_customer' => "Ajouter un nouveau client",
     'customer_type' => "Type de client",

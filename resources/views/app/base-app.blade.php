@@ -46,6 +46,7 @@
         <script src="{{ asset('assets/app/js/script.js') }}"></script>
         <script src="{{ asset('assets/app/js/register.js') }}"></script>
         <script src="{{ asset('assets/app/js/main.js') }}"></script>
+        <script src="{{ asset('assets/app/js/booking.js') }}"></script>
         <script src="{{ asset('assets/app/js/dataTables-init.js') }}"></script>
 
     </body>

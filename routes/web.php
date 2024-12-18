@@ -1,11 +1,16 @@
 <?php
 
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DeviseController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PaymentMethodesController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\ServiceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -99,3 +104,66 @@ Route::controller(CustomerController::class)->group(function(){
         Route::post('/save_customer', 'save_customer')->name('app_save_customer');
     });
 });
+
+Route::controller(RoomController::class)->group(function(){
+    Route::middleware('auth')->group(function(){
+        Route::get('/room_category', 'room_category')->name('app_room_category');
+        Route::get('/rooms', 'rooms')->name('app_rooms');
+        Route::get('/add_room_category/{id:integer}', 'add_room_category')->name('app_add_room_category');
+        Route::get('/add_room/{id:integer}', 'add_room')->name('app_add_room');
+
+        Route::post('/save_room_category', 'save_room_category')->name('app_save_room_category');
+        Route::post('/save_room', 'save_room')->name('app_save_room');
+    });
+});
+
+Route::controller(DeviseController::class)->group(function(){
+    Route::middleware('auth')->group(function(){
+        Route::get('/currency', 'currency')->name('app_currency');
+        Route::get('/create_currency/{id:int}', 'create_currency')->name('app_create_currency');
+        Route::get('/info_currency/{id:int}', 'info_currency')->name('app_info_currency');
+
+
+        Route::post('/change_default_currency', 'change_default_currency')->name('app_change_default_currency');
+        Route::post('/save_currency', 'save_currency')->name('app_save_currency');
+        Route::post('/delete_currency', 'delete_currency')->name('app_delete_currency');
+    });
+});
+
+
+Route::controller(ServiceController::class)->group(function(){
+    Route::middleware('auth')->group(function(){
+        Route::get('/services', 'services')->name('app_services');
+        Route::get('/add_services/{id:int}', 'add_services')->name('app_add_services');
+
+        Route::post('/save_service', 'save_service')->name('app_save_service');
+    });
+});
+
+Route::controller(BookingController::class)->group(function(){
+    Route::middleware('auth')->group(function(){
+        Route::get('/booking', 'booking')->name('app_booking');
+        Route::get('/add_booking/{id:int}/{reference:string}', 'add_booking')->name('app_add_booking');
+        Route::get('/setup_reservation/{id:int}', 'setup_reservation')->name('app_setup_reservation');
+
+        Route::post('/save_booking', 'save_booking')->name('app_save_booking');
+        Route::post('/count_day', 'count_day')->name('app_count_day');
+        Route::post('/save_service_assign', 'save_service_assign')->name('app_save_service_assign');
+        Route::post('/delete_service_assign', 'delete_service_assign')->name('app_delete_service_assign');
+        Route::post('/room_session', 'room_session')->name('app_room_session');
+    });
+});
+
+Route::controller(PaymentMethodesController::class)->group(function(){
+    Route::middleware('auth')->group(function(){
+        Route::get('/payment_methods', 'paymentMethods')->name('app_payment_methods');
+        Route::get('/add_new_payment_methods', 'addNewPaymentMethods')->name('app_add_new_payment_methods');
+        Route::get('/info_payment_methods/{id:int}', 'infoPaymentMethods')->name('app_info_payment_methods');
+        Route::get('/update_payment_methods/{id:int}', 'upDatePaymentMethods')->name('app_update_payment_methods');
+
+        Route::post('/create_payment_methods', 'createPaymentMethods')->name('app_create_payment_methods');
+        Route::post('/delete_payment_methods', 'deletePaymentMethods')->name('app_delete_payment_methods');
+    });
+});
+
+

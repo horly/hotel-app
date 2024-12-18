@@ -6,17 +6,17 @@ $('.save').click(function(){
 $('#change-email-request-save').click(function(){
   $('#change-email-request-save').addClass('d-none');
   $('#change-email-request-loading').removeClass('d-none');
-}); 
+});
 
 function loadingBtnEntreManagement(id_entreprise, id_user, token, url){
   $('#btn-' + id_entreprise).addClass('d-none');
   $('#loading-' + id_entreprise).removeClass('d-none');
 
   var inputs = '';
-  inputs += '<input type="hidden" name="id_entreprise" value="' + id_entreprise + '" />' 
+  inputs += '<input type="hidden" name="id_entreprise" value="' + id_entreprise + '" />'
             + '<input type="hidden" name="id_user" value="' + id_user + '" />'
             + '<input type="hidden" name="_token" value="' + token + '" />';
-  
+
   $("body").append('<form action="' + url + '" method="POST" id="poster">' + inputs + '</form>');
   $("#poster").submit();
 }
@@ -26,11 +26,11 @@ function loadingBtnEntreManagementUF(id_functionalUnit, id_entreprise, id_user, 
   $('#loading-' + id_functionalUnit).removeClass('d-none');
 
   var inputs = '';
-  inputs += '<input type="hidden" name="id_functionalUnit" value="' + id_functionalUnit + '" />' 
+  inputs += '<input type="hidden" name="id_functionalUnit" value="' + id_functionalUnit + '" />'
             + '<input type="hidden" name="id_entreprise" value="' + id_entreprise + '" />'
             + '<input type="hidden" name="id_user" value="' + id_user + '" />'
             + '<input type="hidden" name="_token" value="' + token + '" />';
-  
+
   $("body").append('<form action="' + url + '" method="POST" id="posterFu">' + inputs + '</form>');
   $("#posterFu").submit();
 }
@@ -48,8 +48,8 @@ function deleteElement(id, url, token){
     },
     function(){
         swal({
-          title : $('#deleted').val(), 
-          text : $('#the_item_was_successfully_deleted').val(), 
+          title : $('#deleted').val(),
+          text : $('#the_item_was_successfully_deleted').val(),
           type : "success",
         }, function(){
           //$('#form_phone_delete').submit();
@@ -57,9 +57,9 @@ function deleteElement(id, url, token){
           //console.log(url);
           //console.log(token);
           var inputs = '';
-          inputs += '<input type="hidden" name="id_element" value="' + id + '" />' 
+          inputs += '<input type="hidden" name="id_element" value="' + id + '" />'
                     + '<input type="hidden" name="_token" value="' + token + '" />';
-          
+
           $("body").append('<form action="' + url + '" method="POST" id="poster">' + inputs + '</form>');
           $("#poster").submit();
         });
@@ -78,8 +78,8 @@ function deleteElementTwoVal(id1, id2, url, token){
   },
   function(){
       swal({
-        title : $('#deleted').val(), 
-        text : $('#the_item_was_successfully_deleted').val(), 
+        title : $('#deleted').val(),
+        text : $('#the_item_was_successfully_deleted').val(),
         type : "success",
       }, function(){
         //$('#form_phone_delete').submit();
@@ -87,10 +87,10 @@ function deleteElementTwoVal(id1, id2, url, token){
         //console.log(url);
         //console.log(token);
         var inputs = '';
-        inputs += '<input type="hidden" name="id_element1" value="' + id1 + '" />' 
+        inputs += '<input type="hidden" name="id_element1" value="' + id1 + '" />'
                   + '<input type="hidden" name="id_element2" value="' + id2 + '" />'
                   + '<input type="hidden" name="_token" value="' + token + '" />';
-        
+
         $("body").append('<form action="' + url + '" method="POST" id="poster">' + inputs + '</form>');
         $("#poster").submit();
       });
@@ -109,8 +109,8 @@ function deleteElementThreeVal(id1, id2, id3, url, token){
   },
   function(){
       swal({
-        title : $('#deleted').val(), 
-        text : $('#the_item_was_successfully_deleted').val(), 
+        title : $('#deleted').val(),
+        text : $('#the_item_was_successfully_deleted').val(),
         type : "success",
       }, function(){
         //$('#form_phone_delete').submit();
@@ -118,11 +118,11 @@ function deleteElementThreeVal(id1, id2, id3, url, token){
         //console.log(url);
         //console.log(token);
         var inputs = '';
-        inputs += '<input type="hidden" name="id_element1" value="' + id1 + '" />' 
+        inputs += '<input type="hidden" name="id_element1" value="' + id1 + '" />'
                   + '<input type="hidden" name="id_element2" value="' + id2 + '" />'
                   + '<input type="hidden" name="id_element3" value="' + id3 + '" />'
                   + '<input type="hidden" name="_token" value="' + token + '" />';
-        
+
         $("body").append('<form action="' + url + '" method="POST" id="poster">' + inputs + '</form>');
         $("#poster").submit();
       });
@@ -145,9 +145,9 @@ $('.country-select').change(function(){
 
 function readNotification(id, url, token){
     var inputs = '';
-    inputs += '<input type="hidden" name="id_element" value="' + id + '" />' 
+    inputs += '<input type="hidden" name="id_element" value="' + id + '" />'
               + '<input type="hidden" name="_token" value="' + token + '" />';
-    
+
     $("body").append('<form action="' + url + '" method="POST" id="posterNotif">' + inputs + '</form>');
     $("#posterNotif").submit();
 }

@@ -33,30 +33,69 @@
                     </a>
                 </li>
 
-                <li class="sidebar-item  has-sub">
+                <li class="sidebar-item  @if(Request::route()->getName() == "app_room_category" ||
+                                                Request::route()->getName() == "app_rooms" ||
+                                                Request::route()->getName() == "app_add_room_category" ||
+                                                Request::route()->getName() == "app_add_room")
+                                            active
+                        @endif has-sub">
                     <a href="#" class='sidebar-link'>
                         <i class="fas fa-bed"></i>
                         <span>{{ __('room.rooms') }}</span>
                     </a>
-                    <ul class="submenu ">
-                        <li class="submenu-item ">
-                            <a href="ui-icons-bootstrap-icons.html">{{ __('room.room_list') }} </a>
+                    <ul class="submenu @if(Request::route()->getName() == "app_room_category" ||
+                                            Request::route()->getName() == "app_rooms" ||
+                                            Request::route()->getName() == "app_add_room_category" ||
+                                            Request::route()->getName() == "app_add_room")
+                                            active
+                        @endif">
+                        <li class="submenu-item @if(Request::route()->getName() == "app_rooms") active @endif">
+                            <a href="{{ route('app_rooms') }}">
+                                {{ __('room.room_list') }}
+                            </a>
                         </li>
-                        <li class="submenu-item ">
-                            <a href="ui-icons-fontawesome.html">{{ __('article.article_category') }}</a>
+                        <li class="submenu-item @if(Request::route()->getName() == "app_room_category") active @endif">
+                            <a href="{{ route('app_room_category') }}">
+                                {{ __('article.article_category') }}
+                            </a>
                         </li>
                     </ul>
                 </li>
 
-                <li class="sidebar-item  ">
-                    <a href="#" class='sidebar-link'>
+                <li class="sidebar-item @if (Request::route()->getName() == "app_currency" ||
+                                                Request::route()->getName() == "app_create_currency" ||
+                                                Request::route()->getName() == "app_info_currency" ||
+                                                Request::route()->getName() == "app_update_currency") active @endif">
+                    <a href="{{ route('app_currency') }}" class='sidebar-link'>
+                        <i class="fa-solid fa-money-bill-trend-up"></i>
+                        <span>{{ __('dashboard.currencies') }}</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item @if (Request::route()->getName() == "app_payment_methods" ||
+                                                Request::route()->getName() == "app_add_new_payment_methods" ||
+                                                Request::route()->getName() == "app_info_payment_methods" ||
+                                                Request::route()->getName() == "app_update_payment_methods") active @endif">
+                    <a href="{{ route('app_payment_methods') }}" class='sidebar-link'>
+                        <i class="fa-solid fa-coins"></i>
+                        <span>{{ __('dashboard.payment_methods') }}</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item  @if(Request::route()->getName() == "app_booking" ||
+                                                Request::route()->getName() == "app_add_booking")
+                                                active
+                                        @endif">
+                    <a href="{{ route('app_booking') }}" class='sidebar-link'>
                         <i class="fas fa-calendar-check"></i>
                         <span>{{ __('reservation.reservations') }}</span>
                     </a>
                 </li>
 
-                <li class="sidebar-item  ">
-                    <a href="#" class='sidebar-link'>
+                <li class="sidebar-item  @if(Request::route()->getName() == "app_services" ||
+                                                Request::route()->getName() == "app_add_services")
+                                                active @endif">
+                    <a href="{{ route('app_services') }}" class='sidebar-link'>
                         <i class="fas fa-concierge-bell"></i>
                         <span>{{ __('dashboard.services') }}</span>
                     </a>

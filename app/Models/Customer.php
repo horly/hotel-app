@@ -20,4 +20,9 @@ class Customer extends Model
         'phoneNumber',
         'emailAddr',
     ];
+
+    public function bookings()
+    {
+        return $this->hasMany('App\Models\Booking');
+    }
 }

@@ -47,4 +47,9 @@ return [
     'service_successfully_deleted' => "Service deleted successfully!",
     'update_a_service' => "Update a service",
     'enter_a_valid_number_please' => "Enter a valid number please!",
+
+    'service_name' => "Service name",
+    'enter_the_service_name' => "Enter the service name",
+    'enter_the_service_name_please' => "Enter the service name please!",
+    'enter_the_valid_service_price' => "Enter the valid service price!",
 ];

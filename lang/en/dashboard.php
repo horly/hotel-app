@@ -82,4 +82,6 @@
 
         'invoice' => "Invoice",
         'invoices' => "Invoices",
+
+        'please_select_a_main_currency' => "Please select a main currency",
 ];

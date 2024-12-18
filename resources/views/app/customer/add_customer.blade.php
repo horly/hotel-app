@@ -91,7 +91,11 @@
                             </div>
                         </div>
 
-                        @include('app.button.save-button')
+                        <div class="row">
+                            <div class="col-sm-4 mx-auto">
+                                @include('app.button.save-button')
+                            </div>
+                        </div>
 
                     </form>
                 </div>
