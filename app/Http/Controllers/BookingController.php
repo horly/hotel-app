@@ -30,14 +30,13 @@ class BookingController extends Controller
 
     public function booking()
     {
-
         $deviseGest = DB::table('devise_gestions')
             ->join('devises', 'devise_gestions.id_devise', '=', 'devises.id')
             ->where([
                 'devise_gestions.default_cur_manage' => 1,
         ])->first();
 
-        $bookings = Booking::all();
+        $bookings = Booking::orderBy('id', 'desc')->get();
 
         return view('app.booking.booking', compact('deviseGest', 'bookings'));
     }
@@ -66,7 +65,11 @@ class BookingController extends Controller
 
         $booking = Booking::where('id', $id_booking)->first();
 
+        $number_of_day = 0;
+        $price_per_night = 0.00;
         $total_price = 0.00;
+
+        $total_service_assigns_perday = $total_service_assigns;
 
         if($booking)
         {
@@ -76,9 +79,21 @@ class BookingController extends Controller
             $date1 = Carbon::parse($arrival_date_booking);
             $date2 = Carbon::parse($departure_date_booking);
 
+            $price_per_night = $booking->room->category->price;
+
             $daysDifference = $date1->diffInDays($date2);
-            $total_price = $daysDifference * $booking->room->category->price;
+            $total_price = $daysDifference * $price_per_night;
+
+            $number_of_day = $daysDifference;
+
+            $total_service_assigns_perday = $total_service_assigns * $number_of_day;
+
+            Session::put('number_of_days_session', $number_of_day);
+            Session::put('total_price_service_included_session', number_format($total_price + $total_service_assigns_perday, 2, '.', ' '));
+            Session::put('booking_other_services_session', number_format($total_service_assigns_perday, 2, '.', ' '));
         }
+
+        //dd($number_of_day);
 
         return view('app.booking.add_booking', compact(
             'id_booking',
@@ -90,7 +105,10 @@ class BookingController extends Controller
             'service_assigns',
             'total_service_assigns',
             'booking',
+            'price_per_night',
             'total_price',
+            'number_of_day',
+            'total_service_assigns_perday'
         ));
     }
 
@@ -110,10 +128,24 @@ class BookingController extends Controller
         $this->request->session()->forget('arrival_date_booking_session');
         $this->request->session()->forget('departure_date_booking_session');
 
+        $this->request->session()->forget('number_of_days_session');
+        $this->request->session()->forget('price_per_night_session');
+
+        $this->request->session()->forget('booking_other_services_session');
+
         $this->request->session()->forget('total_price_booking_session');
         $this->request->session()->forget('total_price_service_included_session');
 
-        return redirect()->route('app_add_booking', ['id' => $id, 'reference' => $ref_reservation]);
+        $booking = Booking::where('id', $id)->first();
+
+        if($booking)
+        {
+            return redirect()->route('app_add_booking', ['id' => $booking->id, 'reference' => $booking->reference_reservation]);
+        }
+        else
+        {
+            return redirect()->route('app_add_booking', ['id' => $id, 'reference' => $ref_reservation]);
+        }
 
     }
 
@@ -136,6 +168,11 @@ class BookingController extends Controller
         $arrival_date_booking_session = $this->request->input('arrival_date_booking_session');
         $departure_date_booking_session = $this->request->input('departure_date_booking_session');
 
+        $number_of_days_session = $this->request->input('number_of_days_session');
+        $price_per_night_session = $this->request->input('price_per_night_session');
+
+        $booking_other_services_session = $this->request->input('booking_other_services_session');
+
         $total_price_booking_session = $this->request->input('total_price_booking_session');
         $total_price_service_included_session = $this->request->input('total_price_service_included_session');
 
@@ -150,6 +187,11 @@ class BookingController extends Controller
 
         Session::put('arrival_date_booking_session', $arrival_date_booking_session);
         Session::put('departure_date_booking_session', $departure_date_booking_session);
+
+        Session::put('booking_other_services_session', $booking_other_services_session);
+
+        Session::put('number_of_days_session', $number_of_days_session);
+        Session::put('price_per_night_session', $price_per_night_session);
 
         Session::put('total_price_booking_session', $total_price_booking_session);
         //Session::put('total_price_service_included_session', $total_price_service_included_session);
@@ -215,15 +257,19 @@ class BookingController extends Controller
                                 ->where('service_assign_reservations.ref_reservation_assgn', $ref_reservation)
                                 ->sum('services.price');
 
+        $total_service_assigns_perday = $total_service_assigns * $daysDifference;
 
         $total_include_service = $total_service_assigns + $total_price;
 
         return response()->json([
             'code' => 200,
             'daysDifference' => $daysDifference,
+            'room_price' => number_format($room_price, 2, '.', ' '),
             'total_price' => number_format($total_price, 2, '.', ' '),
             'total_include_service' => number_format($total_include_service, 2, '.', ' '),
             'ref_reservation' => $ref_reservation,
+            'total_service_assigns' => number_format($total_service_assigns, 2, '.', ' '),
+            'total_service_assigns_perday' => number_format($total_service_assigns_perday, 2, '.', ' '),
         ]);
     }
 
@@ -246,6 +292,11 @@ class BookingController extends Controller
         $arrival_date_booking_session = $requestF->input('arrival_date_booking_session');
         $departure_date_booking_session = $requestF->input('departure_date_booking_session');
 
+        $booking_other_services_session = $requestF->input('booking_other_services_session');
+
+        $number_of_days_session = $this->request->input('number_of_days_session');
+        $price_per_night_session = $this->request->input('price_per_night_session');
+
         $total_price_booking_session = $requestF->input('total_price_booking_session');
         $total_price_service_included_session = $requestF->input('total_price_service_included_session');
 
@@ -261,8 +312,14 @@ class BookingController extends Controller
         Session::put('arrival_date_booking_session', $arrival_date_booking_session);
         Session::put('departure_date_booking_session', $departure_date_booking_session);
 
+        //Session::put('booking_other_services_session', $booking_other_services_session);
+
+        Session::put('number_of_days_session', $number_of_days_session);
+        Session::put('price_per_night_session', $price_per_night_session);
+
         Session::put('total_price_booking_session', $total_price_booking_session);
         //Session::put('total_price_service_included_session', $total_price_service_included_session);
+
 
         $service_exist = ServiceAssignReservation::where([
             ['id_service', '=', $service_booking],
@@ -276,6 +333,16 @@ class BookingController extends Controller
                 'id_service' => $service_booking,
             ]);
 
+            $service = Service::where('id', $service_booking)->first();
+
+            $result = $service->price * $number_of_days_session;
+            $total = number_format($result + $booking_other_services_session, 2, '.', ' ');
+            $total_all = number_format($total + $total_price_booking_session, 2, '.', ' ');
+
+            Session::put('booking_other_services_session', $total);
+            Session::put('total_price_service_included_session', $total_all);
+
+            //dd($total_all);
             return redirect()->back()->with('success', __('service.service_added_successfully'));
         }
         else
@@ -287,6 +354,21 @@ class BookingController extends Controller
     public function delete_service_assign()
     {
         $id_element = $this->request->input('id_element');
+
+        $service_assign = ServiceAssignReservation::where('id', $id_element)->first();
+        $service = Service::where('id', $service_assign->id_service)->first();
+
+        $number_of_days = Session::get('number_of_days_session');
+        $total_price = Session::get('total_price_service_included_session');
+        $booking_other_services = Session::get('booking_other_services_session');
+
+        $service_price = $service->price * $number_of_days;
+        $total = $total_price - $service_price;
+
+        $other_service = $booking_other_services - $service_price;
+
+        Session::put('booking_other_services_session', $other_service);
+        Session::put('total_price_service_included_session', $total);
 
         DB::table('service_assign_reservations')->where('id', $id_element)->delete();
 

@@ -82,6 +82,16 @@
                     </a>
                 </li>
 
+
+                <li class="sidebar-item  @if(Request::route()->getName() == "app_services" ||
+                                            Request::route()->getName() == "app_add_services")
+                                            active @endif">
+                    <a href="{{ route('app_services') }}" class='sidebar-link'>
+                        <i class="fas fa-concierge-bell"></i>
+                        <span>{{ __('dashboard.services') }}</span>
+                    </a>
+                </li>
+
                 <li class="sidebar-item  @if(Request::route()->getName() == "app_booking" ||
                                                 Request::route()->getName() == "app_add_booking")
                                                 active
@@ -92,17 +102,11 @@
                     </a>
                 </li>
 
-                <li class="sidebar-item  @if(Request::route()->getName() == "app_services" ||
-                                                Request::route()->getName() == "app_add_services")
-                                                active @endif">
-                    <a href="{{ route('app_services') }}" class='sidebar-link'>
-                        <i class="fas fa-concierge-bell"></i>
-                        <span>{{ __('dashboard.services') }}</span>
-                    </a>
-                </li>
-
-                <li class="sidebar-item  ">
-                    <a href="#" class='sidebar-link'>
+                <li class="sidebar-item  @if (Request::route()->getName() == "app_invoices" ||
+                                                Request::route()->getName() == "app_add_invoice")
+                                            active
+                                        @endif">
+                    <a href="{{ route('app_invoices') }}" class='sidebar-link'>
                         <i class="fa-solid fa-file-invoice-dollar"></i>
                         <span>{{ __('dashboard.invoices') }}</span>
                     </a>

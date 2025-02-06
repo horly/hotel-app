@@ -56,7 +56,7 @@
                             <th class="text-end">Total {{ $deviseGest->iso_code }}</th>
                             <th>{{ __('booking.arrival_date') }}</th>
                             <th>{{ __('booking.departure_date') }}</th>
-                            <th>{{ __('room.number_of_people') }}</th>
+                            <th>{{ __('booking.number_of_days') }}</th>
                             <th>{{ __('client.customer') }}</th>
                             <th class="text-center">Action</th>
                         </thead>
@@ -72,7 +72,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <a href="{{ route('app_add_booking', [ 'id'=> $booking->id, 'reference' => $booking->reference_reservation ]) }}">
+                                        <a href="{{ route('app_setup_reservation', [ 'id'=> $booking->id ]) }}">
                                             {{ $booking->reference_reservation }}
                                         </a>
                                     </td>
@@ -104,11 +104,13 @@
                                                 ->join('service_assign_reservations', 'service_assign_reservations.id_service', '=', 'services.id')
                                                 ->where('service_assign_reservations.ref_reservation_assgn', $booking->reference_reservation)
                                                 ->sum('services.price');
+
+                                            $total_all_service = $total_service_assigns * $daysDifference;
                                         @endphp
-                                        {{ number_format($total_service_assigns, 2, '.', ' ') }}
+                                        {{ number_format($total_all_service, 2, '.', ' ') }}
                                     </td>
                                     <td class="text-end">
-                                        {{ number_format($total_price + $total_service_assigns, 2, '.', ' ') }}
+                                        {{ number_format($total_price + $total_all_service, 2, '.', ' ') }}
                                     </td>
                                     <td>
                                         {{ date('Y-m-d', strtotime($booking->arrival_date)) }}
@@ -117,13 +119,13 @@
                                         {{ date('Y-m-d', strtotime($booking->departure_date)) }}
                                     </td>
                                     <td>
-                                        {{ $booking->room->category->people_number }}
+                                        {{ $daysDifference }}
                                     </td>
                                     <td>
                                         {{ $booking->customer->firtName }} {{ $booking->customer->lastName }}
                                     </td>
                                     <td class="text-center">
-                                        <a href="{{ route('app_add_booking', [ 'id'=> $booking->id, 'reference' => $booking->reference_reservation ]) }}">
+                                        <a href="{{ route('app_setup_reservation', [ 'id'=> $booking->id ]) }}">
                                             {{ __('main.show') }}
                                         </a>
                                     </td>

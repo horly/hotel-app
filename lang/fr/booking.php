@@ -29,4 +29,8 @@ return [
 
     'update_booking' => "Mettre à jour la réservation",
     'confirm' => "Confirmer",
+
+    'number_of_days' => "Nombre de jours",
+    'price_per_night' => "Prix ​par nuit",
+    'total_price' => "Prix ​​total",
 ];

@@ -272,7 +272,7 @@
                                     @if (Session::has('arrival_date_booking_session'))
                                         {{ Session::get('arrival_date_booking_session') }}
                                     @else
-                                        {{ ($id_booking == 0) ? "" : date('Y-m-d', strtotime($booking->arrival_date)) }}
+                                        {{ ($id_booking == 0) ? "" : date('d-m-Y', strtotime($booking->arrival_date)) }}
                                     @endif
                                 </span>
                             </div>
@@ -284,19 +284,44 @@
                                     @if (Session::has('departure_date_booking_session'))
                                         {{ Session::get('departure_date_booking_session') }}
                                     @else
-                                        {{ ($id_booking == 0) ? "" : date('Y-m-d', strtotime($booking->departure_date)) }}
+                                        {{ ($id_booking == 0) ? "" : date('d-m-Y', strtotime($booking->departure_date)) }}
+                                    @endif
+                                </span>
+                            </div>
+
+                            <div class="mb-4">
+                                <i class="fa-solid fa-calendar-days"></i>&nbsp;&nbsp;
+                                <span>{{ __('booking.number_of_days') }} :</span>
+                                <span class="fw-bold" id="number_of_days_details">
+                                    @if (Session::has('number_of_days_session'))
+                                        {{ Session::get('number_of_days_session') }}
+                                    @else
+                                        {{ $number_of_day }}
                                     @endif
                                 </span>
                             </div>
 
                             <div class="mb-4">
                                 <i class="fa-solid fa-dollar-sign"></i>&nbsp;&nbsp;
-                                <span>{{ __('booking.tarif') }} :</span>
+                                <span>{{ __('booking.price_per_night') }} :</span>
+                                <span class="fw-bold" id="price_per_night_details">
+                                    @if (Session::has('price_per_night_session'))
+                                        {{ Session::get('price_per_night_session') }}
+                                    @else
+                                        {{ number_format($price_per_night, 2, '.', ' ') }}
+                                    @endif
+                                </span>
+                                <span>{{ $deviseGest->iso_code }}</span>
+                            </div>
+
+                            <div class="mb-4">
+                                <i class="fa-solid fa-dollar-sign"></i>&nbsp;&nbsp;
+                                <span>{{ __('booking.total_price') }} :</span>
                                 <span class="fw-bold" id="total_price_booking_details">
                                     @if (Session::has('total_price_booking_session'))
                                         {{ Session::get('total_price_booking_session') }}
                                     @else
-                                        {{ ($id_booking == 0) ? "0.00" : number_format($total_price, 2, '.', ' ') }}
+                                        {{ number_format($total_price, 2, '.', ' ') }}
                                     @endif
                                 </span>
                                 <span>{{ $deviseGest->iso_code }}</span>
@@ -307,7 +332,11 @@
                                 <i class="fa-solid fa-bell-concierge"></i>&nbsp;&nbsp;
                                 <span>{{ __('booking.other_services') }} :</span>
                                 <span class="fw-bold" id="booking_other_services_details">
-                                    {{ number_format($total_service_assigns, 2, '.', ' ') }}
+                                    @if (Session::has('booking_other_services_session'))
+                                        {{ Session::get('booking_other_services_session') }}
+                                    @else
+                                        {{ number_format($total_service_assigns_perday, 2, '.', ' ') }}
+                                    @endif
                                 </span>
                                 <span>{{ $deviseGest->iso_code }}</span>
                             </div>
@@ -318,13 +347,14 @@
                             <div class="mb-4 fw-bold">
                                 Total :
                                     <span id="total_booking_details">
-                                        @if (Session::has('total_price_booking_session'))
+                                        @if (Session::has('total_price_service_included_session'))
                                             @php
-                                                $total_price_booking_session = Session::get('total_price_booking_session');
+                                                $total_price_service_included_session = Session::get('total_price_service_included_session');
+                                                //dd($total_price_booking_session);
                                             @endphp
-                                            {{ number_format($total_service_assigns + $total_price_booking_session, 2, '.', ' ') }}
+                                            {{ number_format($total_price_service_included_session, 2, '.', ' ') }}
                                         @else
-                                            {{ ($id_booking == 0) ? number_format($total_service_assigns, 2, '.', ' ') : number_format($total_price + $total_service_assigns, 2, '.', ' ') }}
+                                            {{ number_format($total_price + $total_service_assigns_perday, 2, '.', ' ') }}
                                         @endif
                                     </span>
                                 </span>
@@ -356,10 +386,10 @@
                                 </button>
                                 @if ($id_booking != 0)
                                     @if ($booking->confirmed == 0)
-                                        <button class="btn btn-success" type="button">
+                                        <a class="btn btn-success" role="button" href="{{ route('app_setup_invoice', ['id_booking' => $booking->id]) }}">
                                             <i class="fa-solid fa-credit-card"></i>&nbsp;
                                             {{ __('booking.confirm') }}
-                                        </button>
+                                        </a>
                                     @endif
                                 @endif
                             </div>

@@ -5,6 +5,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeviseController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PaymentMethodesController;
@@ -163,6 +164,14 @@ Route::controller(PaymentMethodesController::class)->group(function(){
 
         Route::post('/create_payment_methods', 'createPaymentMethods')->name('app_create_payment_methods');
         Route::post('/delete_payment_methods', 'deletePaymentMethods')->name('app_delete_payment_methods');
+    });
+});
+
+Route::controller(InvoiceController::class)->group(function(){
+    Route::middleware('auth')->group(function(){
+        Route::get('/invoices', 'invoices')->name('app_invoices');
+        Route::get('/setup_invoice/{id_booking:int}', 'setup_invoice')->name('app_setup_invoice');
+        Route::get('/add_invoice/{id_booking:int}/{ref_invoice:int}', 'add_invoice')->name('app_add_invoice');
     });
 });
 

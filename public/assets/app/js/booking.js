@@ -46,12 +46,22 @@ function select_room_booking(token, url)
             $('#total_include_service').text(response.total_include_service);
             //console.log('Price : ' + response.total_price + '\n' + 'Total :' +  response.total_include_service);
 
+            $('.number_of_days_session').val(response.daysDifference);
+            $('#number_of_days_details').text(response.daysDifference);
+
+
+            $('.price_per_night_session').val(response.room_price);
+            $('#price_per_night_details').text(response.room_price);
+
             $('.total_price_booking_session').val(response.total_price);
             $('.total_price_service_included_session').val(response.total_include_service);
 
-            var total_price_booking_details = $('#total_price_booking_details').text();
-            var booking_other_services_details = $('#booking_other_services_details').text();
+            var total_price_booking_details = response.total_price;
+            var booking_other_services_details = response.total_service_assigns_perday;
             var total = parseFloat(booking_other_services_details) + parseFloat(total_price_booking_details);
+
+            $('#booking_other_services_details').text(booking_other_services_details);
+            $('.booking_other_services_session').val(booking_other_services_details);
 
             $('#total_booking_details').text(total.toFixed(2));
 
@@ -105,12 +115,21 @@ function select_arrival_date_booking(token, url)
             $('#total_include_service').text(response.total_include_service);
             //console.log('Price : ' + response.total_price + '\n' + 'Total :' +  response.total_include_service);
 
+            $('.number_of_days_session').val(response.daysDifference);
+            $('#number_of_days_details').text(response.daysDifference);
+
+            $('.price_per_night_session').val(response.room_price);
+            $('#price_per_night_details').text(response.room_price);
+
             $('.total_price_booking_session').val(response.total_price);
             $('.total_price_service_included_session').val(response.total_include_service);
 
-            var total_price_booking_details = $('#total_price_booking_details').text();
-            var booking_other_services_details = $('#booking_other_services_details').text();
+            var total_price_booking_details = response.total_price;
+            var booking_other_services_details = response.total_service_assigns_perday;
             var total = parseFloat(booking_other_services_details) + parseFloat(total_price_booking_details);
+
+            $('#booking_other_services_details').text(booking_other_services_details);
+            $('.booking_other_services_session').val(booking_other_services_details);
 
             $('#total_booking_details').text(total.toFixed(2));
         }
@@ -149,12 +168,21 @@ function select_departure_date_booking(token, url)
             $('#total_include_service').text(response.total_include_service);
             //console.log('Price : ' + response.total_price + '\n' + 'Total :' +  response.total_include_service);
 
+            $('.number_of_days_session').val(response.daysDifference);
+            $('#number_of_days_details').text(response.daysDifference);
+
+            $('.price_per_night_session').val(response.room_price);
+            $('#price_per_night_details').text(response.room_price);
+
             $('.total_price_booking_session').val(response.total_price);
             $('.total_price_service_included_session').val(response.total_include_service);
 
-            var total_price_booking_details = $('#total_price_booking_details').text();
-            var booking_other_services_details = $('#booking_other_services_details').text();
+            var total_price_booking_details = response.total_price;
+            var booking_other_services_details = response.total_service_assigns_perday;
             var total = parseFloat(booking_other_services_details) + parseFloat(total_price_booking_details);
+
+            $('#booking_other_services_details').text(booking_other_services_details);
+            $('.booking_other_services_session').val(booking_other_services_details);
 
             $('#total_booking_details').text(total.toFixed(2));
         }

@@ -29,4 +29,8 @@ return [
 
     'update_booking' => "Update booking",
     'confirm' => "Confirm",
+
+    'number_of_days' => "Number of days",
+    'price_per_night' => "Price per night",
+    'total_price' => "Total price",
 ];
