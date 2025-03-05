@@ -59,16 +59,17 @@
                                 <div class="mb-4 row">
                                     <label for="room_booking" class="col-sm-4 col-form-label">{{ __('room.room') }}*</label>
                                     <div class="col-sm-8">
-                                        <select name="room_booking" id="room_booking" class="form-select @error('room_booking') is-invalid @enderror" onchange="select_room_booking('{{ csrf_token() }}', '{{ route('app_count_day') }}');" url_session="{{ route('app_room_session') }}" token_session="{{ csrf_token() }}">
+                                        <select name="room_booking" id="room_booking" class="form-select @error('room_booking') is-invalid @enderror" onchange="select_room_booking('{{ csrf_token() }}', '{{ route('app_count_day') }}');" url_session="{{ route('app_room_session') }}" token_session="{{ csrf_token() }}" @if($invoice) @if($booking->confirmed == 1) disabled @endif @endif>
 
                                             @if ($id_booking == 0)
-                                                <option value="@if(Session::has('id_room_session')){{ Session::get('id_room_session') }}@endif" room_number="@if(Session::has('room_number_session')){{ Session::get('room_number_session') }}@endif" people_number="@if(Session::has('room_people_session')){{ Session::get('room_people_session') }}@endif" room_price="@if(Session::has('room_price_session')){{ Session::get('room_price_session') }}@endif"  room_cat_name="@if(Session::has('room_category_session')){{ Session::get('room_category_session') }}@endif" selected>
+                                                <option value="@if(Session::has('id_room_session')){{ Session::get('id_room_session') }}@endif" room_number="@if(Session::has('room_number_session')){{ Session::get('room_number_session') }}@endif" people_number="@if(Session::has('room_people_session')){{ Session::get('room_people_session') }}@endif" room_price="@if(Session::has('room_price_session')){{ Session::get('room_price_session') }}@endif"  room_cat_name="@if(Session::has('room_category_session')){{ Session::get('room_category_session') }}@endif" availability="" selected>
                                                     {{-- if id_room_session exist other room variabble exist  --}}
                                                     @if (Session::has('room_number_session'))
                                                         {{ Session::get('room_number_session') }} -
                                                         {{ Session::get('room_category_session') }} -
                                                         {{ number_format(Session::get('room_price_session'), 2, '.', ' ') }} {{ $deviseGest->iso_code }} {{ __('booking.per_night') }} -
                                                         {{ Session::get('room_people_session') }} -
+                                                        {{ Session::get('count_availbty_session') <= 0 ? __('booking.available') : __('booking.not_available')}}
                                                     @else
                                                         {{ __('room.select_a_room') }}
                                                     @endif
@@ -79,16 +80,45 @@
                                                     {{ $booking->room->category->description }} -
                                                     {{ number_format($booking->room->category->price, 2, '.', ' ') }} {{ $deviseGest->iso_code }} {{ __('booking.per_night') }} -
                                                     {{ $booking->room->category->people_number }} -
+                                                    {{ $countGl <= 0 ? __('booking.available') : __('booking.not_available') }}
                                                 </option>
                                             @endif
 
                                             @foreach ($rooms as $room)
-                                                <option value="{{ $room->id }}" room_number="{{ $room->room_number }}" people_number="{{ $room->category->people_number }}" room_price="{{ $room->category->price }}" room_cat_name="{{ $room->category->description }}">
+                                                @php
+                                                    $bookings = App\Models\Booking::where([
+                                                        'confirmed' => 1,
+                                                        'id_room' => $room->id
+                                                    ])->get();
+
+                                                    $count = 0;
+
+                                                    foreach ($bookings as $bk) {
+                                                        $now = date('Y-m-d');
+                                                        $departure_date_bookingd = date('Y-m-d', strtotime($bk->departure_date));
+
+                                                        $date1d = Carbon\Carbon::parse($now);
+                                                        $date2d = Carbon\Carbon::parse($departure_date_bookingd);
+
+                                                        $daysDifferencedd = $date1d->diffInDays($date2d);
+
+                                                        if ($daysDifferencedd > 0) {
+                                                            $count++;
+                                                        }
+                                                    }
+
+                                                @endphp
+
+                                                <option value="{{ $room->id }}" room_number="{{ $room->room_number }}" people_number="{{ $room->category->people_number }}" room_price="{{ $room->category->price }}" room_cat_name="{{ $room->category->description }}" availability="{{ $count }}">
                                                     {{ $room->room_number }} -
                                                     {{ $room->category->description }} -
                                                     {{ number_format($room->category->price, 2, '.', ' ') }} {{ $deviseGest->iso_code }} {{ __('booking.per_night') }} -
                                                     {{ $room->category->people_number }} -
-                                                    {{-- Availibility --}}
+                                                    @if ($count <= 0)
+                                                        {{ __('booking.available') }}
+                                                    @else
+                                                        {{ __('booking.not_available') }}
+                                                    @endif
                                                 </option>
                                             @endforeach
 
@@ -100,7 +130,7 @@
                                 <div class="mb-4 row">
                                     <label for="booking_customer" class="col-sm-4 col-form-label">{{ __('client.customer') }}*</label>
                                     <div class="col-sm-8">
-                                        <select name="booking_customer" id="booking_customer" class="form-select @error('booking_customer') is-invalid @enderror" onchange="select_customer_booking();">
+                                        <select name="booking_customer" id="booking_customer" class="form-select @error('booking_customer') is-invalid @enderror" onchange="select_customer_booking();" @if($invoice) @if($booking->confirmed == 1) disabled @endif @endif>
                                             @if ($id_booking == 0)
                                                 <option value="@if(Session::has('booking_id_customer_session')){{ Session::get('booking_id_customer_session') }}@endif" selected>
                                                     @if (Session::has('booking_customer_session'))
@@ -129,7 +159,7 @@
                                 <div class="mb-4 row">
                                     <label for="arrival_date_booking" class="col-sm-4 col-form-label">{{ __('booking.arrival_date') }}*</label>
                                     <div class="col-sm-8">
-                                        <input type="date" class="form-control @error('arrival_date_booking') is-invalid @enderror" id="arrival_date_booking" name="arrival_date_booking" value="@if(Session::has('arrival_date_booking_session')){{ Session::get('arrival_date_booking_session') }}@else{{ ($id_booking == 0) ? old('arrival_date_booking') : date('Y-m-d', strtotime($booking->arrival_date)) }}@endif" onchange="select_arrival_date_booking('{{ csrf_token() }}', '{{ route('app_count_day') }}');">
+                                        <input type="date" class="form-control @error('arrival_date_booking') is-invalid @enderror" id="arrival_date_booking" name="arrival_date_booking" value="@if(Session::has('arrival_date_booking_session')){{ Session::get('arrival_date_booking_session') }}@else{{ ($id_booking == 0) ? old('arrival_date_booking') : date('Y-m-d', strtotime($booking->arrival_date)) }}@endif" onchange="select_arrival_date_booking('{{ csrf_token() }}', '{{ route('app_count_day') }}');" @if($invoice) @if($booking->confirmed == 1) disabled @endif @endif>
                                         <small class="text-danger">@error('arrival_date_booking') {{ $message }} @enderror</small>
                                     </div>
                                 </div>
@@ -137,7 +167,7 @@
                                 <div class="mb-4 row">
                                     <label for="departure_date_booking" class="col-sm-4 col-form-label">{{ __('booking.departure_date') }}*</label>
                                     <div class="col-sm-8">
-                                        <input type="date" class="form-control @error('departure_date_booking') is-invalid @enderror" id="departure_date_booking" name="departure_date_booking" value="@if(Session::has('departure_date_booking_session')){{ Session::get('departure_date_booking_session') }}@else{{ ($id_booking == 0) ? old('departure_date_booking') : date('Y-m-d', strtotime($booking->departure_date)) }}@endif" onchange="select_departure_date_booking('{{ csrf_token() }}', '{{ route('app_count_day') }}');">
+                                        <input type="date" class="form-control @error('departure_date_booking') is-invalid @enderror" id="departure_date_booking" name="departure_date_booking" value="@if(Session::has('departure_date_booking_session')){{ Session::get('departure_date_booking_session') }}@else{{ ($id_booking == 0) ? old('departure_date_booking') : date('Y-m-d', strtotime($booking->departure_date)) }}@endif" onchange="select_departure_date_booking('{{ csrf_token() }}', '{{ route('app_count_day') }}');" @if($invoice) @if($booking->confirmed == 1) disabled @endif @endif>
                                         <small class="text-danger">@error('departure_date_booking') {{ $message }} @enderror</small>
                                     </div>
                                 </div>
@@ -174,13 +204,13 @@
                                         <input type="hidden" name="total_price_service_included_session" class="total_price_service_included_session" value="@if(Session::has('total_price_service_included_session')){{ Session::get('total_price_service_included_session') }}@else{{ ($id_booking == 0) ? "" : "" }}@endif">
                                         --}}
                                         <div class="input-group">
-                                            <select class="form-select @error('service_booking') is-invalid @enderror" id="service_booking" name="service_booking">
+                                            <select class="form-select @error('service_booking') is-invalid @enderror" id="service_booking" name="service_booking" @if($invoice) @if($booking->confirmed == 1) disabled @endif @endif>
                                                 <option value="" selected>{{ __('booking.select_a_service') }}</option>
                                                 @foreach ($services as $service)
                                                     <option value="{{ $service->id }}">{{ $service->name }} - {{ number_format($service->price, 2, '.', ' ') }} {{ $deviseGest->iso_code }}</option>
                                                 @endforeach>
                                             </select>
-                                            <button class="btn btn-primary" type="submit">{{ __('auth.add') }}</button>
+                                            <button class="btn btn-primary" type="submit" @if($invoice) @if($booking->confirmed == 1) disabled @endif @endif>{{ __('auth.add') }}</button>
                                         </div>
                                         <small class="text-danger">@error('service_booking') {{ $message }} @enderror</small>
                                     </div>
@@ -191,7 +221,7 @@
                                 @foreach ($service_assigns as $service_assign)
 
                                     <li class="list-group-item">
-                                        <button class="btn btn-danger" onclick="deleteElement('{{ $service_assign->id }}', '{{ route('app_delete_service_assign') }}', '{{ csrf_token() }}')">
+                                        <button class="btn btn-danger" onclick="deleteElement('{{ $service_assign->id }}', '{{ route('app_delete_service_assign') }}', '{{ csrf_token() }}')" @if($invoice) @if($booking->confirmed == 1) disabled @endif @endif>
                                             <i class="fa-solid fa-trash-can"></i>
                                         </button>&nbsp;&nbsp;
                                         <span>{{ $service_assign->service->name }} - {{ __('room.price') }} :
@@ -250,6 +280,23 @@
                                     @else
                                         {{ ($id_booking == 0) ? "" : $booking->room->category->description }}
                                     @endif
+                                </span>
+                            </div>
+                            <div class="mb-4">
+                                <i class="fa-solid fa-list-check"></i>&nbsp;&nbsp;
+                                <span>{{ __('room.availability') }} :</span>
+                                <span class="badge @if(Session::has('count_availbty_session')){{ (Session::get('count_availbty_session') <= 0) ? "bg-success" : "bg-danger" }}@else{{ ($countGl <= 0) ? "bg-success" : "bg-danger" }}@endif fw-bold" id="count_availbty_details">
+
+                                    @if (Session::has('count_availbty_session'))
+                                        {{ Session::get('count_availbty_session') <= 0 ? __('booking.available') : __('booking.not_available') }}
+                                    @else
+                                        @if ($id_booking == 0)
+                                            {{ "" }}
+                                        @else
+                                            {{ $countGl <= 0 ? __('booking.available') : __('booking.not_available') }}
+                                        @endif
+                                    @endif
+
                                 </span>
                             </div>
 
@@ -361,9 +408,13 @@
                                 <span>{{ $deviseGest->iso_code }}</span>
                             </div>
 
+                            @php
+                                $bk = DB::table('bookings')->where('id', $id_booking)->first();
+                            @endphp
+
                             <div class="text-end">
                                 @if ($id_booking != 0)
-                                    @if ($booking->confirmed != 0)
+                                    @if ($bk->confirmed == 1)
                                         <button class="btn btn-danger" type="button" disabled>
                                             <i class="fa-solid fa-trash-can"></i>
                                             {{ __('entreprise.delete') }}
@@ -375,7 +426,8 @@
                                         </button>
                                     @endif
                                 @endif
-                                <button class="btn btn-primary" id="booking-reserve" type="button">
+
+                                <button class="btn btn-primary confirm_availability" id="booking-reserve" type="button" @if($invoice) @if($booking->confirmed == 1) disabled @endif @elseif (Session::get('count_availbty_session') > 0) disabled @else @endif>
                                     @if ($id_booking == 0)
                                         <i class="fa-solid fa-calendar-check"></i>
                                         {{ __('booking.reserve') }}
@@ -384,13 +436,20 @@
                                         {{ __('main.save') }}
                                     @endif
                                 </button>
-                                @if ($id_booking != 0)
+                                @if ($booking)
                                     @if ($booking->confirmed == 0)
                                         <a class="btn btn-success" role="button" href="{{ route('app_setup_invoice', ['id_booking' => $booking->id]) }}">
                                             <i class="fa-solid fa-credit-card"></i>&nbsp;
                                             {{ __('booking.confirm') }}
                                         </a>
                                     @endif
+                                @endif
+
+                                @if ($invoice)
+                                    <a class="btn btn-info" role="button" href="{{ route('app_add_invoice', ['id_booking' => $booking->id, 'ref_invoice' => $invoice->reference]) }}">
+                                        <i class="fa-solid fa-file-invoice"></i>
+                                        {{ __('invoice.view_invoice') }}
+                                    </a>
                                 @endif
                             </div>
 

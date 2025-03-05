@@ -6,6 +6,8 @@ function select_room_booking(token, url)
     var people_number = selectedOption.attr('people_number');
     var room_cat_name = selectedOption.attr('room_cat_name');
 
+    var availability = selectedOption.attr('availability');
+
     $('#room_number_details').text(room_number);
     $('#people_number_details').text(people_number)
     $('#room_category_details').text(room_cat_name);
@@ -27,12 +29,14 @@ function select_room_booking(token, url)
     $('.room_category_session').val(room_cat_name);
     $('.room_price_session').val(room_price);
     $('.room_people_session').val(people_number);
+    $('.count_availbty_session').val(availability);
 
     $.ajax({
         type: 'post',
         url: url,
         data: {
             '_token': token,
+            'id_room': id_room,
             'arrival_date_booking': arrival_date_booking,
             'departure_date_booking': departure_date_booking,
             'room_price': room_price,
@@ -58,15 +62,41 @@ function select_room_booking(token, url)
 
             var total_price_booking_details = response.total_price;
             var booking_other_services_details = response.total_service_assigns_perday;
-            var total = parseFloat(booking_other_services_details) + parseFloat(total_price_booking_details);
+            //var total = parseFloat(booking_other_services_details) + parseFloat(total_price_booking_details);
 
             $('#booking_other_services_details').text(booking_other_services_details);
             $('.booking_other_services_session').val(booking_other_services_details);
 
-            $('#total_booking_details').text(total.toFixed(2));
+            //console.log(response.total_all);
+
+
+            $('#total_booking_details').text(response.total_all);
+
+            $('#count_availbty_details').text(response.availabilityText);
 
             //console.log(total.toFixed(2));
 
+            if(response.count <= 0)
+            {
+                $('#count_availbty_details').removeClass('bg-danger');
+                $('#count_availbty_details').addClass('bg-success');
+            }
+            else
+            {
+                $('#count_availbty_details').addClass('bg-danger');
+                $('#count_availbty_details').removeClass('bg-success');
+            }
+
+            if(availability <= 0)
+            {
+                //available
+                $('.confirm_availability').removeAttr('disabled', true);
+            }
+            else
+            {
+                // not available
+                $('.confirm_availability').attr('disabled', true);
+            }
         }
     });
 }
@@ -85,6 +115,9 @@ function select_customer_booking()
 
 function select_arrival_date_booking(token, url)
 {
+    var selectedOption = $('#room_booking').find(":selected");
+    var id_room = selectedOption.val();
+
     var arrival_date_booking = $('#arrival_date_booking').val();
     var departure_date_booking = $('#departure_date_booking').val();
 
@@ -102,6 +135,7 @@ function select_arrival_date_booking(token, url)
         url: url,
         data: {
             '_token': token,
+            'id_room': id_room,
             'arrival_date_booking': arrival_date_booking,
             'departure_date_booking': departure_date_booking,
             'room_price': room_price,
@@ -126,18 +160,22 @@ function select_arrival_date_booking(token, url)
 
             var total_price_booking_details = response.total_price;
             var booking_other_services_details = response.total_service_assigns_perday;
-            var total = parseFloat(booking_other_services_details) + parseFloat(total_price_booking_details);
+            //var total = parseFloat(booking_other_services_details) + parseFloat(total_price_booking_details);
 
             $('#booking_other_services_details').text(booking_other_services_details);
             $('.booking_other_services_session').val(booking_other_services_details);
 
-            $('#total_booking_details').text(total.toFixed(2));
+            //$('#total_booking_details').text(total.toFixed(2));
+            $('#total_booking_details').text(response.total_all);
         }
     });
 }
 
 function select_departure_date_booking(token, url)
 {
+    var selectedOption = $('#room_booking').find(":selected");
+    var id_room = selectedOption.val();
+
     var arrival_date_booking = $('#arrival_date_booking').val();
     var departure_date_booking = $('#departure_date_booking').val();
 
@@ -155,6 +193,7 @@ function select_departure_date_booking(token, url)
         url: url,
         data: {
             '_token': token,
+            'id_room': id_room,
             'arrival_date_booking': arrival_date_booking,
             'departure_date_booking': departure_date_booking,
             'room_price': room_price,
@@ -179,12 +218,13 @@ function select_departure_date_booking(token, url)
 
             var total_price_booking_details = response.total_price;
             var booking_other_services_details = response.total_service_assigns_perday;
-            var total = parseFloat(booking_other_services_details) + parseFloat(total_price_booking_details);
+            //var total = parseFloat(booking_other_services_details) + parseFloat(total_price_booking_details);
 
             $('#booking_other_services_details').text(booking_other_services_details);
             $('.booking_other_services_session').val(booking_other_services_details);
 
-            $('#total_booking_details').text(total.toFixed(2));
+            //$('#total_booking_details').text(total.toFixed(2));
+            $('#total_booking_details').text(response.total_all);
         }
     });
 }

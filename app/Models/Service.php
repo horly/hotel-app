@@ -23,4 +23,8 @@ class Service extends Model
     {
         return $this->hasMany('App\Models\ServiceAssignReservation');
     }
+
+    public function itemServiceInvoice() {
+        return $this->hasMany(ItemServiceInvoice::class);
+    }
 }

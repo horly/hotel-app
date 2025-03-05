@@ -14,10 +14,15 @@ return new class extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->string('reference', 255);
-            $table->integer('days_number');
-            $table->double('room_price_invoice');
-            $table->double('total_room_price_invoice');
-            $table->double('total_service_invoice');
+            $table->double('price');
+
+            $table->bigInteger('id_booking')
+                    ->unsigned()
+                    ->index();
+            $table->foreign('id_booking')
+                    ->references('id')->on('bookings')
+                    ->onDelete('cascade')
+                    ->onUpdate('cascade');
 
             $table->timestamps();
         });

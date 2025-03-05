@@ -55,7 +55,61 @@
                             <th class="text-center">Action</th>
                         </thead>
                         <tbody>
+                            @foreach ($invoices as $invoice)
+                                @php
+                                    $item_room_invoices = App\Models\ItemRoomInvoice::where('id_invoice', $invoice->id)->first();
+                                @endphp
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>
+                                        <a href="{{ route('app_add_invoice', [
+                                                'id_booking'=> $invoice->booking->id,
+                                                'ref_invoice' => $invoice->reference ]) }}">
+                                            {{ $invoice->reference }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {{ $item_room_invoices->room_number }}
+                                    </td>
+                                    <td>
+                                        {{ $item_room_invoices->room_cat_name }}
+                                    </td>
 
+                                    <td>
+                                        @php
+                                            $arrival_date_booking = date('Y-m-d', strtotime($invoice->booking->arrival_date));
+                                            $departure_date_booking = date('Y-m-d', strtotime($invoice->booking->departure_date));
+
+                                            $date1 = Carbon\Carbon::parse($arrival_date_booking);
+                                            $date2 = Carbon\Carbon::parse($departure_date_booking);
+
+                                            $daysDifference = $date1->diffInDays($date2);
+                                            //$total_price = $daysDifference * $invoice->itemServiceInvoice->room_price;
+
+                                        @endphp
+                                        {{ $daysDifference }}
+                                    </td>
+                                    <td class="text-end">
+                                        {{ number_format($invoice->price, 2, '.', ' ') }}
+                                    </td>
+                                    <td class="text-end">
+                                        {{ number_format($invoice->price_service_included, 2, '.', ' ') }}
+                                    </td>
+                                    <td class="text-end">
+                                        {{ number_format($invoice->price + $invoice->price_service_included, 2, '.', ' ') }}
+                                    </td>
+                                    <td>
+                                        {{ $invoice->booking->customer->firtName }} {{ $invoice->booking->customer->lastName }}
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{{ route('app_add_invoice', [
+                                                'id_booking'=> $invoice->booking->id,
+                                                'ref_invoice' => $invoice->reference ]) }}">
+                                            {{ __('main.show') }}
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
 

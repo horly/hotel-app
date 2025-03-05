@@ -29,4 +29,9 @@ class Room extends Model
     {
         return $this->hasMany('App\Models\Booking');
     }
+
+    public function itemRoomInvoices()
+    {
+        return $this->hasMany(ItemRoomInvoice::class);
+    }
 }

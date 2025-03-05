@@ -29,4 +29,8 @@ class Booking extends Model
     {
         return $this->belongsTo('App\Models\Room', 'id_room');
     }
+
+    public function invoice() {
+        return $this->hasMany(ItemServiceInvoice::class);
+    }
 }

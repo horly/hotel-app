@@ -33,4 +33,10 @@ return [
     'number_of_days' => "Number of days",
     'price_per_night' => "Price per night",
     'total_price' => "Total price",
+
+    'total_per_day' => "Total per day",
+    'total_for_days' => "Total for :days days",
+    'total_for_day' => "Total for :day day",
+    'available' => "Available",
+    'not_available' => "Not available",
 ];

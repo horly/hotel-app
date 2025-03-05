@@ -6,6 +6,7 @@ use App\Http\Requests\SaveBookingForm;
 use App\Http\Requests\SaveServiceAssignRequest;
 use App\Models\Booking;
 use App\Models\Customer;
+use App\Models\Invoice;
 use App\Models\Room;
 use App\Models\Service;
 use App\Models\ServiceAssignReservation;
@@ -44,6 +45,7 @@ class BookingController extends Controller
     public function add_booking($id, $reference)
     {
         $id_booking = $id;
+
         $deviseGest = DB::table('devise_gestions')
             ->join('devises', 'devise_gestions.id_devise', '=', 'devises.id')
             ->where([
@@ -71,6 +73,9 @@ class BookingController extends Controller
 
         $total_service_assigns_perday = $total_service_assigns;
 
+        $invoice = null;
+        $countGl = 0;
+
         if($booking)
         {
             $arrival_date_booking = date('Y-m-d', strtotime($booking->arrival_date));
@@ -88,10 +93,35 @@ class BookingController extends Controller
 
             $total_service_assigns_perday = $total_service_assigns * $number_of_day;
 
+            //dd($departure_date_booking);
+
             Session::put('number_of_days_session', $number_of_day);
             Session::put('total_price_service_included_session', number_format($total_price + $total_service_assigns_perday, 2, '.', ' '));
             Session::put('booking_other_services_session', number_format($total_service_assigns_perday, 2, '.', ' '));
+
+            $invoice = Invoice::where('id_booking', $booking->id)->first();
+
+            $bookings = Booking::where([
+                'confirmed' => 1,
+                'id_room' => $booking->room->id
+            ])->get();
+
+            foreach ($bookings as $bke) {
+            $nowGl = date('Y-m-d');
+            $departure_date_bookingGl = date('Y-m-d', strtotime($bke->departure_date));
+
+            $date1Gl = Carbon::parse($nowGl);
+            $date2Gl = Carbon::parse($departure_date_bookingGl);
+
+            $daysDifferenceGl = $date1Gl->diffInDays($date2Gl);
+
+            if ($daysDifferenceGl > 0) {
+                $countGl++;
+                }
+            }
         }
+
+
 
         //dd($number_of_day);
 
@@ -108,7 +138,9 @@ class BookingController extends Controller
             'price_per_night',
             'total_price',
             'number_of_day',
-            'total_service_assigns_perday'
+            'total_service_assigns_perday',
+            'invoice',
+            'countGl',
         ));
     }
 
@@ -121,6 +153,7 @@ class BookingController extends Controller
         $this->request->session()->forget('room_category_session');
         $this->request->session()->forget('room_price_session');
         $this->request->session()->forget('room_people_session');
+        $this->request->session()->forget('count_availbty_session');
 
         $this->request->session()->forget('booking_id_customer_session');
         $this->request->session()->forget('booking_customer_session');
@@ -161,6 +194,7 @@ class BookingController extends Controller
         $room_category_session = $this->request->input('room_category_session');
         $room_price_session = $this->request->input('room_price_session');
         $room_people_session = $this->request->input('room_people_session');
+        $count_availbty_session = $this->request->input('count_availbty_session');
 
         $booking_id_customer_session = $this->request->input('booking_id_customer_session');
         $booking_customer_session = $this->request->input('booking_customer_session');
@@ -181,6 +215,7 @@ class BookingController extends Controller
         Session::put('room_category_session', $room_category_session);
         Session::put('room_price_session', $room_price_session);
         Session::put('room_people_session', $room_people_session);
+        Session::put('count_availbty_session', $count_availbty_session);
 
         Session::put('booking_id_customer_session', $booking_id_customer_session);
         Session::put('booking_customer_session', $booking_customer_session);
@@ -239,6 +274,7 @@ class BookingController extends Controller
 
     public function count_day()
     {
+        $id_room = $this->request->input('id_room');
         $arrival_date_booking = $this->request->input('arrival_date_booking');
         $departure_date_booking = $this->request->input('departure_date_booking');
         $room_price = $this->request->input('room_price');
@@ -261,6 +297,38 @@ class BookingController extends Controller
 
         $total_include_service = $total_service_assigns + $total_price;
 
+
+        $bookings = Booking::where([
+            'confirmed' => 1,
+            'id_room' => $id_room
+        ])->get();
+
+        $count = 0;
+
+        foreach ($bookings as $bktd) {
+            $now = date('Y-m-d');
+
+            $date1d = Carbon::parse($now);
+            $date2d = Carbon::parse($bktd->departure_date);
+
+            $daysDifferenced = $date1d->diffInDays($date2d);
+
+            if ($daysDifferenced > 0) {
+                $count++;
+            }
+        }
+
+        $availabilityText = "";
+
+        if ($count <= 0) {
+            $availabilityText = __('booking.available');
+        } else {
+            $availabilityText = __('booking.not_available');
+        }
+
+        $total_all = $total_price + $total_service_assigns_perday;
+
+
         return response()->json([
             'code' => 200,
             'daysDifference' => $daysDifference,
@@ -270,6 +338,9 @@ class BookingController extends Controller
             'ref_reservation' => $ref_reservation,
             'total_service_assigns' => number_format($total_service_assigns, 2, '.', ' '),
             'total_service_assigns_perday' => number_format($total_service_assigns_perday, 2, '.', ' '),
+            'availabilityText' => $availabilityText,
+            'count' => $count,
+            'total_all' => number_format($total_all, 2, '.', ' '),
         ]);
     }
 
@@ -285,6 +356,7 @@ class BookingController extends Controller
         $room_category_session = $requestF->input('room_category_session');
         $room_price_session = $requestF->input('room_price_session');
         $room_people_session = $requestF->input('room_people_session');
+        $count_availbty_session = $requestF->input('count_availbty_session');
 
         $booking_id_customer_session = $requestF->input('booking_id_customer_session');
         $booking_customer_session = $requestF->input('booking_customer_session');
@@ -305,6 +377,7 @@ class BookingController extends Controller
         Session::put('room_category_session', $room_category_session);
         Session::put('room_price_session', $room_price_session);
         Session::put('room_people_session', $room_people_session);
+        Session::put('count_availbty_session', $count_availbty_session);
 
         Session::put('booking_id_customer_session', $booking_id_customer_session);
         Session::put('booking_customer_session', $booking_customer_session);

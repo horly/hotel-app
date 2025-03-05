@@ -160,5 +160,6 @@
         'days_number' => "Days number",
         'payment' => "Payment",
         'invoice_reference' => "Invoice reference",
+        'view_invoice' => "View invoice",
 
 ];

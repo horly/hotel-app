@@ -172,6 +172,9 @@ Route::controller(InvoiceController::class)->group(function(){
         Route::get('/invoices', 'invoices')->name('app_invoices');
         Route::get('/setup_invoice/{id_booking:int}', 'setup_invoice')->name('app_setup_invoice');
         Route::get('/add_invoice/{id_booking:int}/{ref_invoice:int}', 'add_invoice')->name('app_add_invoice');
+
+        Route::post('/record_invoice_payment', 'record_invoice_payment')->name('app_record_invoice_payment');
+        Route::post('/check_records_amount_invoice', 'checkRecordsAmountInvoice')->name('app_check_records_amount_invoice');
     });
 });
 

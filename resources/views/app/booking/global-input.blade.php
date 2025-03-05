@@ -4,6 +4,8 @@
 <input type="hidden" name="room_price_session" class="room_price_session" value="@if(Session::has('room_price_session')){{ Session::get('room_price_session') }}@else{{ ($id_booking == 0) ? "" : $booking->room->category->price }}@endif">
 <input type="hidden" name="room_people_session" class="room_people_session" value="@if(Session::has('room_people_session')){{ Session::get('room_people_session') }}@else{{ ($id_booking == 0) ? "" : $booking->room->category->people_number }}@endif">
 
+<input type="hidden" name="count_availbty_session" class="count_availbty_session" value="@if(Session::has('count_availbty_session')){{ Session::get('count_availbty_session') }}@else{{ ($id_booking == 0) ? "" : $countGl }}@endif">
+
 <input type="hidden" name="booking_id_customer_session" class="booking_id_customer_session" value="@if(Session::has('booking_id_customer_session')){{ Session::get('booking_id_customer_session') }}@else{{ ($id_booking == 0) ? "" : $booking->customer->id }}@endif">
 <input type="hidden" name="booking_customer_session" class="booking_customer_session" value="@if(Session::has('booking_customer_session')){{ Session::get('booking_customer_session') }}@else{{ ($id_booking == 0) ? "" : $booking->customer->firtName . ' ' . $booking->customer->lastName }}@endif">
 

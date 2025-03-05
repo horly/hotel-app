@@ -57,6 +57,29 @@
                         </thead>
                         <tbody>
                             @foreach ($rooms as $room)
+                                @php
+                                    $bookings = App\Models\Booking::where([
+                                        'confirmed' => 1,
+                                        'id_room' => $room->id
+                                    ])->get();
+
+                                    $count = 0;
+
+                                    foreach ($bookings as $booking) {
+                                        $now = date('Y-m-d');
+                                        $departure_date_booking = date('Y-m-d', strtotime($booking->departure_date));
+
+                                        $date1 = Carbon\Carbon::parse($now);
+                                        $date2 = Carbon\Carbon::parse($departure_date_booking);
+
+                                        $daysDifference = $date1->diffInDays($date2);
+
+                                        if ($daysDifference > 0) {
+                                            $count++;
+                                        }
+                                    }
+
+                                @endphp
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>
@@ -74,7 +97,13 @@
                                         {{ $room_cat->description }}
                                     </td>
                                     <td class="text-center">{{ $room_cat->people_number }}</td>
-                                    <td></td>
+                                    <td>
+                                        @if ($count <= 0)
+                                            <span class="badge bg-success">{{ __('booking.available') }}</span>
+                                        @else
+                                            <span class="badge bg-danger">{{ __('booking.not_available') }}</span>
+                                        @endif
+                                    </td>
                                     <td class="text-center">
                                         <a href="{{ route('app_add_room', [ 'id'=> $room->id ]) }}">
                                             {{ __('main.show') }}

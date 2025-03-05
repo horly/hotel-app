@@ -168,4 +168,5 @@
         'days_number' => "Nombre de jours",
         'payment' => "Paiement",
         'invoice_reference' => "Référence de la facture",
+        'view_invoice' => "Afficher la facture",
     ];
